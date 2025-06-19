@@ -6,7 +6,7 @@ interface GuessesListProps {
 }
 
 const GuessesList: React.FC<GuessesListProps> = ({ matches }) => (
-  <ul className="flex max-w-md flex-col gap-4">
+  <ul className="flex w-full max-w-md flex-col gap-4">
     {[...matches].reverse().map((match, idx) => (
       <li
         key={idx}
@@ -16,8 +16,8 @@ const GuessesList: React.FC<GuessesListProps> = ({ matches }) => (
             : "border-1 border-red-600 bg-red-100 text-red-600"
         } rounded-xl p-4 text-center`}
       >
-        <p className="font-bold">{match.name}</p>
-        <p>{match.description}</p>
+        <p className="text-lg font-bold">{match.name}</p>
+        <p className="text-sm font-extralight">{match.description}</p>
       </li>
     ))}
   </ul>
