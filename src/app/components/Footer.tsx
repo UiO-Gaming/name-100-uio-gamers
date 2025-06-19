@@ -5,7 +5,7 @@ const Footer = () => {
   const { language } = useLanguage();
   const t = translations[language];
   return (
-    <footer className="mt-10 flex flex-col justify-center gap-2 p-10">
+    <footer className="mt-10 flex flex-col justify-center gap-2 p-10 text-center">
       <p>
         {t.madeBy}{" "}
         <a href="https://furumo.eu" target="_blank">
