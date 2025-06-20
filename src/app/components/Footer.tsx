@@ -5,7 +5,7 @@ const Footer = () => {
   const { language } = useLanguage();
   const t = translations[language];
   return (
-    <footer className="mt-10 flex flex-col justify-center gap-2 p-10 text-center">
+    <footer className="bg-background-secondary mt-10 flex flex-col justify-center gap-2 p-10 text-center">
       <p>
         {t.madeBy}{" "}
         <a href="https://furumo.eu" target="_blank">
@@ -13,9 +13,9 @@ const Footer = () => {
         </a>
       </p>
       <p>
-      <a href="https://github.com/LBlend/name100" target="_blank">
-        {t.sourceCode}
-      </a>
+        <a href="https://github.com/LBlend/name100" target="_blank">
+          {t.sourceCode}
+        </a>
       </p>
     </footer>
   );
