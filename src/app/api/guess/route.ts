@@ -1,7 +1,9 @@
+import type { Match } from "@/types";
 import { NextResponse } from "next/server";
+import { findNorwegianPerson } from "./dataProvider";
 
 export async function POST(request: Request) {
   const { input } = await request.json();
-  const correct = input === "test" || input === "test2";
-  return NextResponse.json({ input, name: input.toUpperCase(), correct, description: "title of person" });
+  const match: Match = await findNorwegianPerson(input);
+  return NextResponse.json(match);
 }
