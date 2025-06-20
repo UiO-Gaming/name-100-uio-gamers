@@ -1,11 +1,11 @@
-import type { Match } from "@/types";
+import type { Match, NorwegianPersonItem } from "@/types";
 
 export async function findNorwegianPerson(input: string): Promise<Match> {
   const apiUrl = `https://snl.no/api/v1/search?query=${encodeURIComponent(input)}&limit=5`;
   const response = await fetch(apiUrl);
   const data = await response.json();
 
-  function isNorwegianPerson(item: any): boolean {
+  function isNorwegianPerson(item: NorwegianPersonItem): boolean {
     // Must be a biography
     if (item.article_type_id !== 2) return false;
 
