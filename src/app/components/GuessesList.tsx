@@ -16,7 +16,7 @@ const GuessesList: React.FC<GuessesListProps> = ({ matches }) => (
             : "border-1 border-red-600 bg-red-100 text-red-600"
         } rounded-xl p-4 text-center`}
       >
-        <p className="text-lg font-bold">{match.name}</p>
+        <p className="text-lg font-bold">{match.name ?? match.input}</p>
         <p className="text-sm font-extralight">{match.description}</p>
       </li>
     ))}
