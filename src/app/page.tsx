@@ -1,103 +1,135 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { LanguageProvider, useLanguage } from "@/LanguageContext";
+import { translations } from "@/translations";
+import React, { useMemo, useRef, useState } from "react";
+import Footer from "./components/Footer";
+import GuessesList from "./components/GuessesList";
+import GuessForm from "./components/GuessForm";
+import Header from "./components/Header";
+import HowToPlay from "./components/HowToPlay";
+import HowToPlayButton from "./components/HowToPlayButton";
+import LanguageMenu from "./components/LanguageMenu";
+import RestartButton from "./components/RestartButton";
+import Score from "./components/Score";
+import Timer from "./components/Timer";
+import type { Match } from "./types";
+
+export default function HomePageWithLanguage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <LanguageProvider>
+      <Home />
+    </LanguageProvider>
+  );
+}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
+function Home() {
+  const [input, setInput] = useState("");
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [timer, setTimer] = useState(0);
+  const [timerStarted, setTimerStarted] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [howToPlayOpen, setHowToPlayOpen] = useState(false);
+  const [repeatMessage, setRepeatMessage] = useState("");
+  const { language } = useLanguage();
+  const t = translations[language];
+
+  const correctMatchesCount = useMemo(() => matches.filter((m) => m.correct).length, [matches]);
+
+  const startTimer = () => {
+    if (!timerStarted) {
+      setTimerStarted(true);
+      timerRef.current = setInterval(() => {
+        setTimer((prev) => prev + 1);
+      }, 1000);
+    }
+  };
+
+  const stopTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+
+  React.useEffect(() => {
+    return () => stopTimer();
+  }, []);
+
+  // Stop timer when 100 correct guesses are made
+  React.useEffect(() => {
+    if (correctMatchesCount === 100) {
+      stopTimer();
+    }
+  }, [correctMatchesCount]);
+
+  const handleRestart = () => {
+    stopTimer();
+    setTimer(0);
+    setTimerStarted(false);
+    setMatches([]);
+    setInput("");
+    setRepeatMessage("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedInput = input.trim();
+    if (!trimmedInput) return;
+    if (matches.some((m) => m.input.toLowerCase() === trimmedInput.toLowerCase())) {
+      setRepeatMessage(t.alreadySubmitted);
+      return;
+    }
+    setRepeatMessage("");
+    const res = await fetch("/api/guess", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ input: trimmedInput }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setMatches((prev) => [...prev, { input: trimmedInput, ...data }]);
+      if (data.correct && !timerStarted) {
+        startTimer();
+      }
+    }
+    setInput("");
+  };
+
+  return (
+    <div className="grid min-h-dvh grid-rows-[auto,1fr,auto] gap-12 pt-15">
+      <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+        <LanguageMenu />
+        <HowToPlayButton onClick={() => setHowToPlayOpen(true)} ariaLabel={t.howToPlayTitle} />
+      </div>
+      <Header />
+      <main className="row-start-2 flex w-full flex-1 flex-col items-center gap-6 px-4">
+        {timerStarted && (
+          <div className="flex gap-4">
+            <RestartButton onClick={handleRestart} />
+            <Timer timer={timer} />
+          </div>
+        )}
+        <GuessForm
+          input={input}
+          onInputChange={(e) => {
+            setInput(e.target.value);
+            setRepeatMessage("");
+          }}
+          onSubmit={handleSubmit}
+          disabled={correctMatchesCount === 100}
+        />
+        <Score matchesCount={correctMatchesCount} />
+        {repeatMessage && <div className="mb-2 font-semibold text-red-500">{repeatMessage}</div>}
+        {matches.length > 0 && (
+          <>
+            <h2 className="mt-4 text-2xl">{t.submittedAnswers}</h2>
+            <GuessesList matches={matches} />
+          </>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <Footer />
+      <HowToPlay open={howToPlayOpen} onClose={() => setHowToPlayOpen(false)} />
     </div>
   );
 }
