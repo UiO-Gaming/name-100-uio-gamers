@@ -8,7 +8,7 @@ interface HowToPlayButtonProps {
 
 const HowToPlayButton: React.FC<HowToPlayButtonProps> = ({ onClick, ariaLabel }) => (
   <button
-    className="text-accent border-accent hover:bg-accent cursor-pointer rounded-full border bg-white p-2 text-2xl duration-300 hover:text-white"
+    className="text-accent-primary border-accent-primary hover:bg-accent-primary cursor-pointer rounded-full border bg-white p-2 text-2xl duration-300 hover:text-white"
     onClick={onClick}
     aria-label={ariaLabel}
   >

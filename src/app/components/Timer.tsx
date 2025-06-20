@@ -21,7 +21,7 @@ const Timer: React.FC<TimerProps> = ({ timer }) => {
   };
 
   return (
-    <span className="text-accent2 bg-accent2light border-accent2 flex items-center gap-1 rounded-2xl border-2 p-2 font-bold">
+    <span className="text-accent-secondary bg-accent-secondary-light border-accent-secondary flex items-center gap-1 rounded-2xl border-2 p-2 font-bold">
       <MdOutlineTimer className="text-xl" />
       {formatTime(timer)}
     </span>

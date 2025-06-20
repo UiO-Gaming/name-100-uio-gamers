@@ -18,9 +18,8 @@ const LanguageMenu = () => {
 
   return (
     <Menu as="div" className="relative">
-      {/* Menu Button */}
       <div>
-        <MenuButton className="border-accent bg-accent hover:text-accent aria-expanded:text-accent w-full cursor-pointer rounded-full border px-4 py-2 text-2xl text-white duration-300 hover:bg-white focus:outline-none aria-expanded:bg-white">
+        <MenuButton className="border-accent-primary bg-accent-primary hover:text-accent-primary aria-expanded:text-accent-primary w-full cursor-pointer rounded-full border px-4 py-2 text-2xl text-white duration-300 hover:bg-white focus:outline-none aria-expanded:bg-white">
           <IoLanguage />
         </MenuButton>
       </div>
