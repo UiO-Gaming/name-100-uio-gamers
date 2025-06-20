@@ -36,7 +36,7 @@ export async function findNorwegianPerson(input: string): Promise<Match> {
         } else if (articleJson.subject_title) {
           return articleJson.subject_title;
         }
-      } catch (e) {
+      } catch {
         // fallback to undefined
       }
       return undefined;
