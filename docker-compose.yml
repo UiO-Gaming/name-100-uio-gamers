@@ -1,0 +1,9 @@
+services:
+  name100:
+    build: .
+    container_name: name100
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
