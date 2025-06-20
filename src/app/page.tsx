@@ -97,13 +97,13 @@ function Home() {
   };
 
   return (
-    <div className="grid min-h-dvh grid-rows-[auto,1fr,auto] gap-12 pt-15">
+    <div className="grid min-h-dvh grid-rows-[auto,1fr,auto] pt-15">
       <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
         <LanguageMenu />
         <HowToPlayButton onClick={() => setHowToPlayOpen(true)} ariaLabel={t.howToPlayTitle} />
       </div>
       <Header />
-      <main className="row-start-2 flex w-full flex-1 flex-col items-center gap-6 px-4">
+      <main className="row-start-2 flex w-full flex-1 flex-col items-center gap-6 px-4 pb-12">
         {timerStarted && (
           <div className="flex gap-4">
             <RestartButton onClick={handleRestart} />
@@ -128,7 +128,7 @@ function Home() {
           </>
         )}
       </main>
-      <Footer />
+      <Footer className="self-end" />
       <HowToPlay open={howToPlayOpen} onClose={() => setHowToPlayOpen(false)} />
     </div>
   );
