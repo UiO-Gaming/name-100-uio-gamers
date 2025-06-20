@@ -1,3 +1,4 @@
+import { GOAL_AMOUNT } from "@/consts";
 import { useLanguage } from "@/LanguageContext";
 import { translations } from "@/translations";
 
@@ -7,7 +8,7 @@ const Header = () => {
   return (
     <header>
       <h1 className="mb-12 text-center text-4xl font-bold">
-        {t.appTitle.split(" ")[0]} 100 <span className="border-norway border-b-2">{t.norwegians}</span>
+        {t.appTitle.split(" ")[0]} {GOAL_AMOUNT} <span className="border-norway border-b-2">{t.norwegians}</span>
       </h1>
     </header>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { GOAL_AMOUNT } from "@/consts";
 import { LanguageProvider, useLanguage } from "@/LanguageContext";
 import { translations } from "@/translations";
 import React, { useMemo, useRef, useState } from "react";
@@ -58,7 +59,7 @@ function Home() {
 
   // Stop timer when 100 correct guesses are made
   React.useEffect(() => {
-    if (correctMatchesCount === 100) {
+    if (correctMatchesCount === GOAL_AMOUNT) {
       stopTimer();
     }
   }, [correctMatchesCount]);
@@ -122,7 +123,7 @@ function Home() {
             setRepeatMessage("");
           }}
           onSubmit={handleSubmit}
-          disabled={correctMatchesCount === 100}
+          disabled={correctMatchesCount === GOAL_AMOUNT}
         />
         <Score matchesCount={correctMatchesCount} />
         {repeatMessage && <div className="mb-2 font-semibold text-red-500">{repeatMessage}</div>}

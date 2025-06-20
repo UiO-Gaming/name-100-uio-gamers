@@ -1,3 +1,4 @@
+import { GOAL_AMOUNT } from "@/consts";
 import React from "react";
 
 interface ScoreProps {
@@ -7,7 +8,7 @@ interface ScoreProps {
 const Score: React.FC<ScoreProps> = ({ matchesCount }) => {
   return (
     <p className="text-xl">
-      <span className="font-bold">{matchesCount}</span> / 100
+      <span className="font-bold">{matchesCount}</span> / {GOAL_AMOUNT}
     </p>
   );
 };
