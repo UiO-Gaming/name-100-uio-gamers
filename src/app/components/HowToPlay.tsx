@@ -21,7 +21,7 @@ const HowToPlay: React.FC<HowToPlayProps> = ({ open, onClose }) => {
         >
           &times;
         </button>
-        <p className="text-accent mb-4 text-2xl font-bold">{t.howToPlayTitle}</p>
+        <p className="text-accent-primary mb-4 text-2xl font-bold">{t.howToPlayTitle}</p>
         <ul className="list-disc space-y-2 text-gray-700">
           <li>{t.howToPlay1}</li>
           <li>{t.howToPlay2}</li>
