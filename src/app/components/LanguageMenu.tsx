@@ -24,15 +24,16 @@ const LanguageMenu = () => {
         </MenuButton>
       </div>
 
-      {/* Dropdown Menu */}
-      <MenuItems className="absolute right-0 z-50 mt-2 w-32 origin-top-right rounded bg-white">
+      <MenuItems className="bg-background-secondary border-border absolute right-0 z-50 mt-2 w-32 origin-top-right rounded border shadow-lg">
         <div className="py-1">
           {LANGUAGE_OPTIONS.map(({ code, label }) => (
             <MenuItem
               key={code}
               as="button"
               className={({ active }) =>
-                `w-full cursor-pointer px-4 py-2 text-center text-sm text-gray-700 ${active ? "bg-gray-300" : ""}`
+                `text-foreground w-full cursor-pointer px-4 py-2 text-center text-sm transition-colors ${
+                  active ? "bg-accent-primary text-white" : "hover:bg-accent-primary hover:text-white"
+                }`
               }
               onClick={() => setLanguage(code)}
             >
