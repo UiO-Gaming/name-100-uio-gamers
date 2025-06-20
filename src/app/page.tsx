@@ -88,6 +88,11 @@ function Home() {
     });
     if (res.ok) {
       const data = await res.json();
+      if (data.name && matches.some((m) => m.name && m.name.toLowerCase() === data.name.toLowerCase())) {
+        setRepeatMessage(t.alreadySubmitted);
+        setInput("");
+        return;
+      }
       setMatches((prev) => [...prev, { input: trimmedInput, ...data }]);
       if (data.correct && !timerStarted) {
         startTimer();
