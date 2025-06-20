@@ -12,9 +12,11 @@ const Footer = () => {
           Leander Furumo
         </a>
       </p>
+      <p>
       <a href="https://github.com/LBlend/name100" target="_blank">
         {t.sourceCode}
       </a>
+      </p>
     </footer>
   );
 };
