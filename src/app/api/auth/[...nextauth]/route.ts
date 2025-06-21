@@ -1,3 +1,4 @@
+import { verifyUserRole } from "@/lib/discord";
 import type { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth";
 import DiscordProvider, { type DiscordProfile } from "next-auth/providers/discord";
@@ -24,6 +25,20 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async signIn({ user }) {
+      const hasRequiredRole = await verifyUserRole(user.id);
+
+      if (!hasRequiredRole) {
+        return false;
+      }
+
+      return true;
+    },
+  },
+  pages: {
+    error: "/auth/error",
+  },
   secret: process.env.NEXTAUTH_SECRET,
 };
 
