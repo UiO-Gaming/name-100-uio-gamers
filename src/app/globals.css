@@ -1,10 +1,6 @@
 @import "tailwindcss";
 
 :root {
-  /* Norway brand colors */
-  --norway-red: #ef2b2d;
-  --norway-blue: #002768;
-
   /* Light theme colors */
   --background: #e9e9e9;
   --background-secondary: #dedddd;
@@ -12,19 +8,16 @@
   --foreground-secondary: #6b7280;
 
   /* Dark theme colors */
-  --background-dark: #1e1e2e;
-  --background-secondary-dark: #181825;
+  --background-dark: #1d1320;
+  --background-secondary-dark: #261f31;
   --foreground-dark: #ffffff;
   --foreground-secondary-dark: #a1a1aa;
 
   /* Accent colors */
-  --accent-primary: var(--norway-red);
-  --accent-primary-light: #ff8888;
-  --accent-secondary: var(--norway-blue);
-  --accent-secondary-light: #77a9ff;
-
-  /* Norway gradient */
-  --gradient-norway: linear-gradient(64deg, var(--norway-red) 20%, #ffffff 50%, var(--norway-blue) 75%);
+  --accent-primary: #7d36e7;
+  --accent-primary-light: #c8a3ff;
+  --accent-secondary: #d6408e;
+  --accent-secondary-light: #ffc0cb;
 
   /* Border colors */
   --border-light: #e5e7eb;

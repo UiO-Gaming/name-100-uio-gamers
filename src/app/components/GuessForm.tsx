@@ -28,7 +28,7 @@ const GuessForm: React.FC<GuessFormProps> = ({ input, onInputChange, onSubmit, d
       />
       <button
         type="submit"
-        className={`rounded px-4 py-1 ${
+        className={`rounded px-4 py-1 text-white ${
           !input || disabled ? "cursor-not-allowed bg-gray-400 opacity-50" : "bg-accent-primary cursor-pointer"
         }`}
         disabled={disabled || !input}
