@@ -16,7 +16,7 @@ const Footer = ({ className }: { className?: string }) => {
         </a>
       </p>
       <p>
-        <a href="https://github.com/LBlend/name100" target="_blank">
+        <a href="https://github.com/UiO-Gaming/name-100-uio-gamers" target="_blank">
           {t.sourceCode}
         </a>
       </p>
