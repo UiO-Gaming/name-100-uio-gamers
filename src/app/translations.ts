@@ -13,6 +13,8 @@ export const translations = {
     madeBy: "Made by",
     sourceCode: "Source code",
     subject: "UiO Gamers",
+    loginPrompt: "Please log in to play",
+    loginWithDiscord: "Login with Discord",
   },
   no: {
     submittedAnswers: "Dine svar",
@@ -28,5 +30,7 @@ export const translations = {
     madeBy: "Laget av",
     sourceCode: "Kildekode",
     subject: "UiO-Gamere",
+    loginPrompt: "Vennligst logg inn for å spille",
+    loginWithDiscord: "Logg inn med Discord",
   },
 };
