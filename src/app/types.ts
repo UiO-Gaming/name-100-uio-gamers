@@ -2,6 +2,7 @@ export interface Match {
   input: string;
   name: string | undefined;
   description: string | undefined;
+  translationKey?: string;
   correct: boolean;
 }
 
