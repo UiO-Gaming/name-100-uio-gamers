@@ -6,14 +6,15 @@ export interface Match {
   correct: boolean;
 }
 
-export interface NorwegianPersonItem {
-  article_type_id: number;
-  rank: number;
-  taxonomy_title?: string;
-  subject_title?: string;
-  first_sentences?: string;
-  snippet?: string;
-  title?: string;
-  headword?: string;
-  article_url_json?: string;
+export interface DiscordGuildMember {
+  user: {
+    id: string;
+    username: string;
+    global_name: string | null;
+    discriminator: string;
+    avatar: string | null;
+  };
+  nick: string | null;
+  roles: string[];
+  joined_at: string;
 }

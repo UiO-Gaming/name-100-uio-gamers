@@ -19,6 +19,7 @@ export const translations = {
     accessDenied: "Access Denied",
     accessDeniedMessage: "You don't have the paying member role in the UiO Gaming Discord server.",
     tryAgain: "Try again logging in again",
+    notPayingMember: "not a paying member",
   },
   no: {
     submittedAnswers: "Dine svar",
@@ -40,5 +41,6 @@ export const translations = {
     accessDenied: "Tilgang nektet",
     accessDeniedMessage: 'Du har ikke rollen "Betalende medlem" i UiO Gaming sin Discord-server.',
     tryAgain: "Logg på igjen",
+    notPayingMember: "ikke betalende medlem",
   },
 };
