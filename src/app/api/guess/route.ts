@@ -1,4 +1,4 @@
-import { authOptions } from "@/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import type { Match } from "@/types";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";

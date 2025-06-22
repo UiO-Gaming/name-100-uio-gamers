@@ -1,5 +1,5 @@
-import { authOptions } from "@/api/auth/[...nextauth]/route";
 import { LanguageProvider } from "@/LanguageContext";
+import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import HomeClient from "./components/HomeClient";
 import LoginClient from "./components/LoginClient";
