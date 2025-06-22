@@ -7,9 +7,10 @@ interface GuessFormProps {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
   disabled?: boolean;
+  loading?: boolean;
 }
 
-const GuessForm: React.FC<GuessFormProps> = ({ input, onInputChange, onSubmit, disabled }) => {
+const GuessForm: React.FC<GuessFormProps> = ({ input, onInputChange, onSubmit, disabled, loading }) => {
   const { language } = useLanguage();
   const t = translations[language];
   return (
@@ -19,21 +20,23 @@ const GuessForm: React.FC<GuessFormProps> = ({ input, onInputChange, onSubmit, d
         value={input}
         onChange={onInputChange}
         className={`focus:border-accent-primary h-12 w-60 rounded border px-2 py-1 focus:outline-none md:w-75 ${
-          disabled
+          disabled || loading
             ? "cursor-not-allowed border-gray-500 bg-gray-400 opacity-50"
             : "bg-background-secondary duration-300"
         }`}
-        placeholder={t.placeholder}
-        disabled={disabled}
+        placeholder={loading ? t.loading || "Loading..." : t.placeholder}
+        disabled={disabled || loading}
       />
       <button
         type="submit"
         className={`rounded px-4 py-1 text-white ${
-          !input || disabled ? "cursor-not-allowed bg-gray-400 opacity-50" : "bg-accent-primary cursor-pointer"
+          !input || disabled || loading
+            ? "cursor-not-allowed bg-gray-400 opacity-50"
+            : "bg-accent-primary cursor-pointer"
         }`}
-        disabled={disabled || !input}
+        disabled={disabled || !input || loading}
       >
-        {t.submit}
+        {loading ? t.loading || "Loading..." : t.submit}
       </button>
     </form>
   );
