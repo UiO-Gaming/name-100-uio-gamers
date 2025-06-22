@@ -1,6 +1,6 @@
 import { useLanguage } from "@/LanguageContext";
 import { translations } from "@/translations";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 interface GuessFormProps {
   input: string;
@@ -13,9 +13,25 @@ interface GuessFormProps {
 const GuessForm: React.FC<GuessFormProps> = ({ input, onInputChange, onSubmit, disabled, loading }) => {
   const { language } = useLanguage();
   const t = translations[language];
+  const inputRef = useRef<HTMLInputElement>(null);
+  const prevInputRef = useRef(input);
+
+  // Focus input when it gets cleared after submission
+  useEffect(() => {
+    if (prevInputRef.current && !input && !loading) {
+      inputRef.current?.focus();
+    }
+    prevInputRef.current = input;
+  }, [input, loading]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    onSubmit(e);
+  };
+
   return (
-    <form onSubmit={onSubmit} className="flex gap-2">
+    <form onSubmit={handleSubmit} className="flex gap-2">
       <input
+        ref={inputRef}
         type="text"
         value={input}
         onChange={onInputChange}
