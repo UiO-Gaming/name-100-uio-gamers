@@ -6,7 +6,8 @@ export const translations = {
     submit: "Submit",
     loading: "Loading...",
     howToPlayTitle: "How to Play",
-    howToPlay1: "Any Discord username or nickname who has the paying member role should be accepted.",
+    howToPlay1:
+      "Any Discord username or nickname of users who have the paying member role (Betalende Medlem) should be accepted.",
     howToPlay2: "No repeats allowed.",
     howToPlay3: "The timer starts once you make your first correct guess.",
     appTitle: "Name UiO Gaming members",
@@ -18,7 +19,7 @@ export const translations = {
     loginWithDiscord: "Login with Discord",
     accessDenied: "Access Denied",
     accessDeniedMessage: "You don't have the paying member role in the UiO Gaming Discord server.",
-    tryAgain: "Try again logging in again",
+    tryAgain: "Try logging in again",
     notPayingMember: "not a paying member",
   },
   no: {
@@ -28,7 +29,7 @@ export const translations = {
     submit: "Send",
     loading: "Laster...",
     howToPlayTitle: "Slik spiller du",
-    howToPlay1: "Alle bør Discordbrukernavn eller kallenavn som har betalende medlem rollen godtas.",
+    howToPlay1: 'Alle Discordbrukernavn eller kallenavn til brukere som har rollen "Betalende Medlem" bør godtas.',
     howToPlay2: "Du kan ikke gjenta navn.",
     howToPlay3: "Tiden starter første gang du skriver et godkjent navn.",
     appTitle: "Navngi UiO-Gamere",
