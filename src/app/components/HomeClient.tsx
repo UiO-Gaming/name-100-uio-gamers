@@ -1,13 +1,13 @@
 "use client";
 
-import { GOAL_AMOUNT } from "@/consts";
 import { useLanguage } from "@/LanguageContext";
 import { translations } from "@/translations";
 import type { Match } from "@/types";
 import type { Session } from "next-auth";
 import Image from "next/image";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Footer from "./Footer";
+import GoalSelector from "./GoalSelector";
 import GuessesList from "./GuessesList";
 import GuessForm from "./GuessForm";
 import Header from "./Header";
@@ -30,6 +30,23 @@ export default function HomeClient({ session }: { session: Session }) {
   const [repeatMessage, setRepeatMessage] = useState("");
   const { language } = useLanguage();
   const t = translations[language];
+  const [goalAmount, setGoalAmount] = useState(100);
+  const [totalMembers, setTotalMembers] = useState(0);
+
+  useEffect(() => {
+    const fetchTotalMembers = async () => {
+      try {
+        const res = await fetch("/api/members/count");
+        if (res.ok) {
+          const data = await res.json();
+          setTotalMembers(data.count);
+        }
+      } catch (error) {
+        console.error("Failed to fetch total members", error);
+      }
+    };
+    fetchTotalMembers();
+  }, []);
 
   const correctMatchesCount = useMemo(() => matches.filter((m) => m.correct).length, [matches]);
 
@@ -55,10 +72,10 @@ export default function HomeClient({ session }: { session: Session }) {
 
   // Stop timer when 100 correct guesses are made
   React.useEffect(() => {
-    if (correctMatchesCount === GOAL_AMOUNT) {
+    if (correctMatchesCount === goalAmount) {
       stopTimer();
     }
-  }, [correctMatchesCount]);
+  }, [correctMatchesCount, goalAmount]);
 
   const handleRestart = () => {
     stopTimer();
@@ -135,8 +152,19 @@ export default function HomeClient({ session }: { session: Session }) {
           <HowToPlayButton onClick={() => setHowToPlayOpen(true)} ariaLabel={t.howToPlayTitle} />
         </div>
       </div>
-      <Header />
+      <Header goalAmount={goalAmount} />
       <main className="row-start-2 flex w-full flex-1 flex-col items-center gap-6 px-4 pt-28 pb-12 sm:pt-12">
+        {!timerStarted && (
+          <GoalSelector
+            goalAmount={goalAmount}
+            setGoalAmount={(amount) => {
+              setGoalAmount(amount);
+              handleRestart();
+            }}
+            totalMembers={totalMembers}
+            disabled={timerStarted}
+          />
+        )}
         {timerStarted && (
           <div className="flex gap-4">
             <RestartButton onClick={handleRestart} />
@@ -150,10 +178,10 @@ export default function HomeClient({ session }: { session: Session }) {
             setRepeatMessage("");
           }}
           onSubmit={handleSubmit}
-          disabled={correctMatchesCount === GOAL_AMOUNT}
+          disabled={correctMatchesCount === goalAmount}
           loading={loading}
         />
-        <Score matchesCount={correctMatchesCount} />
+        <Score matchesCount={correctMatchesCount} goalAmount={goalAmount} />
         {repeatMessage && <div className="mb-2 font-semibold text-red-500">{repeatMessage}</div>}
         {matches.length > 0 && (
           <>

@@ -81,6 +81,15 @@ function memberMatchesInput(member: DiscordGuildMember, normalizedInput: string)
   return username === normalizedInput || globalName === normalizedInput || nickname === normalizedInput;
 }
 
+export async function getPayingMemberCount(): Promise<number> {
+  const payingMemberRoleId = process.env.DISCORD_REQUIRED_ROLE_ID;
+  if (!payingMemberRoleId) {
+    throw new Error("Missing DISCORD_REQUIRED_ROLE_ID environment variable");
+  }
+  const members = await getDiscordMembers();
+  return members.filter((m) => m.roles.includes(payingMemberRoleId)).length;
+}
+
 export async function findDiscordMember(input: string, guessedIds: string[] = []): Promise<Match> {
   const payingMemberRoleId = process.env.DISCORD_REQUIRED_ROLE_ID;
 

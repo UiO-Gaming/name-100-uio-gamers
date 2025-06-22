@@ -21,6 +21,7 @@ export const translations = {
     accessDeniedMessage: "You don't have the paying member role in the UiO Gaming Discord server.",
     tryAgain: "Try logging in again",
     notPayingMember: "not a paying member",
+    goalSelectorLabel: "Number of gamers to name:",
   },
   no: {
     submittedAnswers: "Dine svar",
@@ -43,5 +44,6 @@ export const translations = {
     accessDeniedMessage: 'Du har ikke rollen "Betalende medlem" i UiO Gaming sin Discord-server.',
     tryAgain: "Logg på igjen",
     notPayingMember: "ikke betalende medlem",
+    goalSelectorLabel: "Velg antall som må navngis:",
   },
 };
