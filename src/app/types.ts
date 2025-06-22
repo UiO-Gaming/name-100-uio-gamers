@@ -1,4 +1,5 @@
 export interface Match {
+  id?: string;
   input: string;
   name: string | undefined;
   description: string | undefined;

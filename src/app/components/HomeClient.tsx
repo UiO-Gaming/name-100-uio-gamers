@@ -73,7 +73,7 @@ export default function HomeClient({ session }: { session: Session }) {
     e.preventDefault();
     const trimmedInput = input.trim();
     if (!trimmedInput) return;
-    if (matches.some((m) => m.input.toLowerCase() === trimmedInput.toLowerCase())) {
+    if (matches.some((m) => m.input.toLowerCase() === trimmedInput.toLowerCase() && !m.name)) {
       setRepeatMessage(t.alreadySubmitted);
       return;
     }
@@ -81,19 +81,24 @@ export default function HomeClient({ session }: { session: Session }) {
     setLoading(true);
 
     try {
+      const guessedIds = matches.filter((m) => m.correct && m.id).map((m) => m.id!);
+
       const res = await fetch("/api/guess", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: trimmedInput }),
+        body: JSON.stringify({ input: trimmedInput, guessedIds }),
       });
+
       if (res.ok) {
-        const data = await res.json();
-        if (data.name && matches.some((m) => m.name && m.name.toLowerCase() === data.name.toLowerCase())) {
+        const data = (await res.json()) as Match;
+
+        if (data.id && matches.some((m) => m.id && m.id === data.id)) {
           setRepeatMessage(t.alreadySubmitted);
           setInput("");
           return;
         }
-        setMatches((prev) => [...prev, { input: trimmedInput, ...data }]);
+        setMatches((prev) => [...prev, data]);
+
         if (data.correct && !timerStarted) {
           startTimer();
         }

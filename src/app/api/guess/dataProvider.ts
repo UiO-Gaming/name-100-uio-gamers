@@ -81,7 +81,7 @@ function memberMatchesInput(member: DiscordGuildMember, normalizedInput: string)
   return username === normalizedInput || globalName === normalizedInput || nickname === normalizedInput;
 }
 
-export async function findDiscordMember(input: string): Promise<Match> {
+export async function findDiscordMember(input: string, guessedIds: string[] = []): Promise<Match> {
   const payingMemberRoleId = process.env.DISCORD_REQUIRED_ROLE_ID;
 
   if (!payingMemberRoleId) {
@@ -96,31 +96,25 @@ export async function findDiscordMember(input: string): Promise<Match> {
 
   try {
     const members = await getDiscordMembers();
-    const payingMembers = members.filter((member) => member.roles.includes(payingMemberRoleId));
     const normalizedInput = normalizeInput(input);
 
-    // First check if any member matches the input (regardless of role)
-    const anyMatchingMember = members.find((member) => memberMatchesInput(member, normalizedInput));
+    const allMatchingMembers = members.filter((member) => memberMatchesInput(member, normalizedInput));
 
-    // If member exists but doesn't have the paying member role
-    if (anyMatchingMember && !anyMatchingMember.roles.includes(payingMemberRoleId)) {
-      return {
-        input,
-        name: getDisplayName(anyMatchingMember),
-        description: undefined,
-        translationKey: "notPayingMember",
-        correct: false,
-      };
+    if (allMatchingMembers.length === 0) {
+      return { input, name: undefined, description: undefined, correct: false };
     }
 
-    // Find matching member among paying members
-    const matchingMember = payingMembers.find((member) => memberMatchesInput(member, normalizedInput));
+    const payingMembers = allMatchingMembers.filter((member) => member.roles.includes(payingMemberRoleId));
+    const nonPayingMembers = allMatchingMembers.filter((member) => !member.roles.includes(payingMemberRoleId));
 
-    if (matchingMember) {
-      const displayName = getDisplayName(matchingMember);
-      const username = matchingMember.user.username;
+    const unguessedPayingMember = payingMembers.find((member) => !guessedIds.includes(member.user.id));
+
+    if (unguessedPayingMember) {
+      const displayName = getDisplayName(unguessedPayingMember);
+      const username = unguessedPayingMember.user.username;
 
       return {
+        id: unguessedPayingMember.user.id,
         input,
         name: displayName,
         description: displayName === username ? undefined : username,
@@ -128,6 +122,49 @@ export async function findDiscordMember(input: string): Promise<Match> {
       };
     }
 
+    const unguessedNonPayingMember = nonPayingMembers.find((member) => !guessedIds.includes(member.user.id));
+
+    if (unguessedNonPayingMember) {
+      return {
+        id: unguessedNonPayingMember.user.id,
+        input,
+        name: getDisplayName(unguessedNonPayingMember),
+        description: undefined,
+        translationKey: "notPayingMember",
+        correct: false,
+      };
+    }
+
+    // If we are here, all matching members (paying or not) have been guessed.
+    // Return the first paying member match to signal a duplicate to the client.
+    if (payingMembers.length > 0) {
+      const firstPayingMatch = payingMembers[0];
+      const displayName = getDisplayName(firstPayingMatch);
+      const username = firstPayingMatch.user.username;
+
+      return {
+        id: firstPayingMatch.user.id,
+        input,
+        name: displayName,
+        description: displayName === username ? undefined : username,
+        correct: true, // It is a correct member, but already guessed.
+      };
+    }
+
+    // If no paying members matched, return the first non-paying member.
+    if (nonPayingMembers.length > 0) {
+      const firstNonPayingMatch = nonPayingMembers[0];
+      return {
+        id: firstNonPayingMatch.user.id,
+        input,
+        name: getDisplayName(firstNonPayingMatch),
+        description: undefined,
+        translationKey: "notPayingMember",
+        correct: false,
+      };
+    }
+
+    // Should not be reached if allMatchingMembers.length > 0
     return {
       input,
       name: undefined,

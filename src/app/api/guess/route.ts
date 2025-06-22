@@ -9,7 +9,7 @@ export async function POST(request: Request) {
   if (!session) {
     return new Response("Unauthorized", { status: 401 });
   }
-  const { input } = await request.json();
-  const match: Match = await findDiscordMember(input);
+  const { input, guessedIds } = await request.json();
+  const match: Match = await findDiscordMember(input, guessedIds);
   return NextResponse.json(match);
 }
