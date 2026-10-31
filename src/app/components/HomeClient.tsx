@@ -27,7 +27,7 @@ export default function HomeClient({ session }: { session: Session }) {
   const [loading, setLoading] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
-  const [repeatMessage, setRepeatMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const { language } = useLanguage();
   const t = translations[language];
   const [goalAmount, setGoalAmount] = useState(100);
@@ -83,49 +83,50 @@ export default function HomeClient({ session }: { session: Session }) {
     setTimerStarted(false);
     setMatches([]);
     setInput("");
-    setRepeatMessage("");
+    setErrorMessage("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedInput = input.trim();
     if (!trimmedInput) return;
-    if (matches.some((m) => m.input.toLowerCase() === trimmedInput.toLowerCase() && !m.name)) {
-      setRepeatMessage(t.alreadySubmitted);
+    if (matches.some((m) => !m.name && m.input.toLowerCase() === trimmedInput.toLowerCase())) {
+      setErrorMessage(t.alreadySubmitted);
       return;
     }
-    setRepeatMessage("");
+    setErrorMessage("");
     setLoading(true);
 
     try {
-      const guessedIds = matches.filter((m) => m.correct && m.id).map((m) => m.id!);
+      const guessedIds = matches.flatMap((m) => (m.correct && m.id ? [m.id] : []));
 
       const res = await fetch("/api/guess", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ input: trimmedInput, guessedIds }),
       });
+      const data: Match | null = res.ok ? await res.json() : null;
 
-      if (res.ok) {
-        const data = (await res.json()) as Match;
+      if (!data) {
+        setErrorMessage(res.status === 401 ? t.sessionExpired : t.guessFailed);
+        return;
+      }
 
-        if (data.id && matches.some((m) => m.id && m.id === data.id)) {
-          setRepeatMessage(t.alreadySubmitted);
-          setInput("");
-          return;
-        }
-        setMatches((prev) => [...prev, data]);
+      setInput("");
+      if (data.id && matches.some((m) => m.id === data.id)) {
+        setErrorMessage(t.alreadySubmitted);
+        return;
+      }
+      setMatches((prev) => [...prev, data]);
 
-        if (data.correct && !timerStarted) {
-          startTimer();
-        }
+      if (data.correct && !timerStarted) {
+        startTimer();
       }
     } catch (error) {
       console.error("Error submitting guess:", error);
-      setRepeatMessage("An error occurred. Please try again.");
+      setErrorMessage(t.guessFailed);
     } finally {
       setLoading(false);
-      setInput("");
     }
   };
 
@@ -175,14 +176,14 @@ export default function HomeClient({ session }: { session: Session }) {
           input={input}
           onInputChange={(e) => {
             setInput(e.target.value);
-            setRepeatMessage("");
+            setErrorMessage("");
           }}
           onSubmit={handleSubmit}
           disabled={correctMatchesCount === goalAmount}
           loading={loading}
         />
         <Score matchesCount={correctMatchesCount} goalAmount={goalAmount} />
-        {repeatMessage && <div className="mb-2 font-semibold text-red-500">{repeatMessage}</div>}
+        {errorMessage && <div className="mb-2 font-semibold text-red-500">{errorMessage}</div>}
         {matches.length > 0 && (
           <>
             <h2 className="mt-4 text-2xl">{t.submittedAnswers}</h2>

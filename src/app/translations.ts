@@ -22,6 +22,8 @@ export const translations = {
     tryAgain: "Try logging in again",
     notPayingMember: "not a paying member",
     goalSelectorLabel: "Number of gamers to name:",
+    guessFailed: "Something went wrong. Please try again.",
+    sessionExpired: "Your session has expired. Reload the page to log in again.",
   },
   no: {
     submittedAnswers: "Dine svar",
@@ -45,5 +47,7 @@ export const translations = {
     tryAgain: "Logg på igjen",
     notPayingMember: "ikke betalende medlem",
     goalSelectorLabel: "Velg antall som må navngis:",
+    guessFailed: "Noe gikk galt. Prøv igjen.",
+    sessionExpired: "Økten din har utløpt. Last inn siden på nytt for å logge inn igjen.",
   },
 };

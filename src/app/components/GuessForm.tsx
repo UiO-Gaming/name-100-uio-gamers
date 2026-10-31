@@ -14,15 +14,12 @@ const GuessForm: React.FC<GuessFormProps> = ({ input, onInputChange, onSubmit, d
   const { language } = useLanguage();
   const t = translations[language];
   const inputRef = useRef<HTMLInputElement>(null);
-  const prevInputRef = useRef(input);
 
-  // Focus input when it gets cleared after submission
   useEffect(() => {
-    if (prevInputRef.current && !input && !loading) {
+    if (!loading && !disabled) {
       inputRef.current?.focus();
     }
-    prevInputRef.current = input;
-  }, [input, loading]);
+  }, [loading, disabled]);
 
   const handleSubmit = (e: React.FormEvent) => {
     onSubmit(e);
