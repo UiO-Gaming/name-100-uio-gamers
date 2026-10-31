@@ -25,6 +25,7 @@ export const translations = {
     goalReached: "You named {count} UiO Gamers in {time}!",
     guessFailed: "Something went wrong. Please try again.",
     sessionExpired: "Your session has expired. Reload the page to log in again.",
+    close: "Close",
   },
   no: {
     submittedAnswers: "Dine svar",
@@ -51,5 +52,6 @@ export const translations = {
     goalReached: "Du navnga {count} UiO-Gamere på {time}!",
     guessFailed: "Noe gikk galt. Prøv igjen.",
     sessionExpired: "Økten din har utløpt. Last inn siden på nytt for å logge inn igjen.",
+    close: "Lukk",
   },
 };
