@@ -29,6 +29,7 @@ export const authOptions: NextAuthOptions = {
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID as string,
       clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+      issuer: "https://discord.com",
       authorization: { params: { scope: "identify" } },
       profile(profile: DiscordProfile) {
         return {
