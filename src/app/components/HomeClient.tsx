@@ -137,7 +137,7 @@ export default function HomeClient({ session }: { session: Session }) {
   };
 
   return (
-    <div className="grid min-h-dvh grid-rows-[auto,1fr,auto]">
+    <div className="grid min-h-dvh grid-rows-[auto_1fr_auto]">
       <div className="absolute top-4 right-4 left-4 z-50 flex flex-wrap items-center justify-between gap-4">
         {session.user && (
           <div className="flex items-center gap-4">
