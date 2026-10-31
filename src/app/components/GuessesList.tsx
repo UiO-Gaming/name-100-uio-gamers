@@ -20,9 +20,9 @@ const GuessesList: React.FC<GuessesListProps> = ({ matches }) => {
 
   return (
     <ul className="flex w-full max-w-md flex-col gap-4">
-      {[...matches].reverse().map((match, idx) => (
+      {[...matches].reverse().map((match) => (
         <li
-          key={idx}
+          key={match.id ?? `guess-${match.input}`}
           className={`${
             match.correct
               ? "border-1 border-green-600 bg-green-100 text-green-600"
