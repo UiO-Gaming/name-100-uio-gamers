@@ -42,6 +42,9 @@ export default function HomeClient({ session }: { session: Session }) {
         if (res.ok) {
           const data = await res.json();
           setTotalMembers(data.count);
+          if (data.count > 0) {
+            setGoalAmount((goal) => Math.min(goal, data.count));
+          }
         }
       } catch (error) {
         console.error("Failed to fetch total members", error);

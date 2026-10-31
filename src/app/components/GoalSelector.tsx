@@ -4,6 +4,8 @@ import { useLanguage } from "@/LanguageContext";
 import { translations } from "@/translations";
 import React from "react";
 
+const DEFAULT_OPTIONS = [25, 50, 100];
+
 interface GoalSelectorProps {
   goalAmount: number;
   setGoalAmount: (amount: number) => void;
@@ -15,12 +17,8 @@ const GoalSelector: React.FC<GoalSelectorProps> = ({ goalAmount, setGoalAmount, 
   const { language } = useLanguage();
   const t = translations[language];
 
-  const options = [25, 50, 100];
-  if (totalMembers > 0 && !options.includes(totalMembers)) {
-    // Add totalMembers to options and sort
-    options.push(totalMembers);
-    options.sort((a, b) => a - b);
-  }
+  const options =
+    totalMembers > 0 ? [...DEFAULT_OPTIONS.filter((option) => option < totalMembers), totalMembers] : DEFAULT_OPTIONS;
 
   return (
     <div className="flex items-center gap-2">
