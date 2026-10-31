@@ -12,6 +12,18 @@ async function checkRole(userId: string): Promise<boolean> {
   return hasRole;
 }
 
+function getAvatarUrl(profile: DiscordProfile): string {
+  if (profile.avatar) {
+    const format = profile.avatar.startsWith("a_") ? "gif" : "png";
+    return `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
+  }
+  const index =
+    profile.discriminator === "0"
+      ? Number((BigInt(profile.id) >> BigInt(22)) % BigInt(6))
+      : Number(profile.discriminator) % 5;
+  return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
@@ -19,18 +31,11 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
       authorization: { params: { scope: "identify" } },
       profile(profile: DiscordProfile) {
-        if (profile.avatar === null) {
-          const defaultAvatarNumber = parseInt(profile.discriminator) % 5;
-          profile.image_url = `https://cdn.discordapp.com/embed/avatars/${defaultAvatarNumber}.png`;
-        } else {
-          const format = profile.avatar.startsWith("a_") ? "gif" : "png";
-          profile.image_url = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.${format}`;
-        }
         return {
           id: profile.id,
           name: profile.global_name ?? profile.username,
           email: null,
-          image: profile.image_url,
+          image: getAvatarUrl(profile),
         };
       },
     }),
