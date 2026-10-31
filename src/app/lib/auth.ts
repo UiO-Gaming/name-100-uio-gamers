@@ -17,6 +17,7 @@ export const authOptions: NextAuthOptions = {
     DiscordProvider({
       clientId: process.env.DISCORD_CLIENT_ID as string,
       clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+      authorization: { params: { scope: "identify" } },
       profile(profile: DiscordProfile) {
         if (profile.avatar === null) {
           const defaultAvatarNumber = parseInt(profile.discriminator) % 5;
@@ -28,7 +29,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: profile.id,
           name: profile.global_name ?? profile.username,
-          email: profile.email,
+          email: null,
           image: profile.image_url,
         };
       },
