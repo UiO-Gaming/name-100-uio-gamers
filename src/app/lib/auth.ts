@@ -2,6 +2,16 @@ import { verifyUserRole } from "@/lib/discord";
 import type { NextAuthOptions } from "next-auth";
 import DiscordProvider, { type DiscordProfile } from "next-auth/providers/discord";
 
+const ROLE_RECHECK_INTERVAL = 60 * 60 * 1000;
+
+const roleChecks = new Map<string, { hasRole: boolean; checkedAt: number }>();
+
+async function checkRole(userId: string): Promise<boolean> {
+  const hasRole = await verifyUserRole(userId);
+  roleChecks.set(userId, { hasRole, checkedAt: Date.now() });
+  return hasRole;
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
@@ -26,13 +36,33 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async signIn({ user }) {
-      const hasRequiredRole = await verifyUserRole(user.id);
-
-      if (!hasRequiredRole) {
+      try {
+        return await checkRole(user.id);
+      } catch (error) {
+        console.error("Error verifying user role:", error);
         return false;
       }
+    },
+    async jwt({ token }) {
+      if (!token.sub) {
+        return token;
+      }
 
-      return true;
+      const cached = roleChecks.get(token.sub);
+      let hasRole = cached?.hasRole ?? true;
+
+      if (!cached || Date.now() - cached.checkedAt > ROLE_RECHECK_INTERVAL) {
+        try {
+          hasRole = await checkRole(token.sub);
+        } catch (error) {
+          console.error("Error re-verifying user role:", error);
+        }
+      }
+
+      if (!hasRole) {
+        throw new Error(`User ${token.sub} no longer has the required role`);
+      }
+      return token;
     },
   },
   pages: {

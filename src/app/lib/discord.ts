@@ -30,23 +30,18 @@ export async function discordFetch(path: string): Promise<Response> {
 }
 
 export async function verifyUserRole(userId: string): Promise<boolean> {
-  try {
-    const guildId = requireEnv("DISCORD_GUILD_ID");
-    const requiredRoleId = requireEnv("DISCORD_REQUIRED_ROLE_ID");
+  const guildId = requireEnv("DISCORD_GUILD_ID");
+  const requiredRoleId = requireEnv("DISCORD_REQUIRED_ROLE_ID");
 
-    const response = await discordFetch(`/guilds/${guildId}/members/${userId}`);
+  const response = await discordFetch(`/guilds/${guildId}/members/${userId}`);
 
-    if (response.status === 404) {
-      return false;
-    }
-    if (!response.ok) {
-      throw new Error(`Failed to fetch guild member ${userId}: ${response.status} ${response.statusText}`);
-    }
-
-    const member: DiscordGuildMember = await response.json();
-    return member.roles.includes(requiredRoleId);
-  } catch (error) {
-    console.error("Error verifying user role:", error);
+  if (response.status === 404) {
     return false;
   }
+  if (!response.ok) {
+    throw new Error(`Failed to fetch guild member ${userId}: ${response.status} ${response.statusText}`);
+  }
+
+  const member: DiscordGuildMember = await response.json();
+  return member.roles.includes(requiredRoleId);
 }
