@@ -26,6 +26,7 @@ export default function HomeClient({ session }: { session: Session }) {
   const [timerStarted, setTimerStarted] = useState(false);
   const [loading, setLoading] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const startedAtRef = useRef(0);
   const gameIdRef = useRef(0);
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -51,13 +52,12 @@ export default function HomeClient({ session }: { session: Session }) {
 
   const correctMatchesCount = useMemo(() => matches.filter((m) => m.correct).length, [matches]);
 
+  const elapsedSeconds = () => Math.floor((Date.now() - startedAtRef.current) / 1000);
+
   const startTimer = () => {
-    if (!timerStarted) {
-      setTimerStarted(true);
-      timerRef.current = setInterval(() => {
-        setTimer((prev) => prev + 1);
-      }, 1000);
-    }
+    startedAtRef.current = Date.now();
+    setTimerStarted(true);
+    timerRef.current = setInterval(() => setTimer(elapsedSeconds()), 1000);
   };
 
   const stopTimer = () => {
@@ -70,13 +70,6 @@ export default function HomeClient({ session }: { session: Session }) {
   React.useEffect(() => {
     return () => stopTimer();
   }, []);
-
-  // Stop timer when 100 correct guesses are made
-  React.useEffect(() => {
-    if (correctMatchesCount === goalAmount) {
-      stopTimer();
-    }
-  }, [correctMatchesCount, goalAmount]);
 
   const handleRestart = () => {
     gameIdRef.current++;
@@ -124,8 +117,12 @@ export default function HomeClient({ session }: { session: Session }) {
       }
       setMatches((prev) => [...prev, data]);
 
-      if (data.correct && !timerStarted) {
-        startTimer();
+      if (data.correct) {
+        if (!timerStarted) startTimer();
+        if (correctMatchesCount + 1 >= goalAmount) {
+          stopTimer();
+          setTimer(elapsedSeconds());
+        }
       }
     } catch (error) {
       console.error("Error submitting guess:", error);
