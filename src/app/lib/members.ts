@@ -1,68 +1,56 @@
+import { discordFetch, requireEnv } from "@/lib/discord";
 import type { DiscordGuildMember, Match } from "@/types";
 
-interface CacheEntry {
-  data: DiscordGuildMember[];
-  timestamp: number;
-}
+const CACHE_TTL = 5 * 60 * 1000;
+const PAGE_SIZE = 1000;
 
-// In-memory cache for Discord API responses
-let discordMembersCache: CacheEntry | null = null;
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
+let membersCache: { members: DiscordGuildMember[]; fetchedAt: number } | null = null;
+let pendingFetch: Promise<DiscordGuildMember[]> | null = null;
 
-async function getDiscordMembers(): Promise<DiscordGuildMember[]> {
-  const guildId = process.env.DISCORD_GUILD_ID;
-  const botToken = process.env.DISCORD_BOT_TOKEN;
+async function fetchAllMembers(): Promise<DiscordGuildMember[]> {
+  const guildId = requireEnv("DISCORD_GUILD_ID");
+  const members: DiscordGuildMember[] = [];
+  let after = "0";
 
-  if (!guildId || !botToken) {
-    throw new Error("Missing required Discord environment variables");
-  }
-
-  // Check if cache is valid
-  if (discordMembersCache && Date.now() - discordMembersCache.timestamp < CACHE_TTL) {
-    return discordMembersCache.data;
-  }
-
-  // Fetch fresh data from Discord API with pagination
-  const allMembers: DiscordGuildMember[] = [];
-  let after: string | undefined = undefined;
-  const limit = 1000; // Maximum allowed by Discord API
-
-  do {
-    const url = new URL(`https://discord.com/api/v10/guilds/${guildId}/members`);
-    url.searchParams.set("limit", limit.toString());
-    if (after) {
-      url.searchParams.set("after", after);
-    }
-
-    const response = await fetch(url.toString(), {
-      headers: {
-        Authorization: `Bot ${botToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-
+  for (;;) {
+    const response = await discordFetch(`/guilds/${guildId}/members?limit=${PAGE_SIZE}&after=${after}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch guild members: ${response.status} ${response.statusText}`);
     }
 
-    const members: DiscordGuildMember[] = await response.json();
-    allMembers.push(...members);
+    const page: DiscordGuildMember[] = await response.json();
+    members.push(...page);
 
-    // Update 'after' for next page (use the last member's user ID)
-    if (members.length === limit) {
-      after = members[members.length - 1].user.id;
-    } else {
-      after = undefined; // No more pages
+    if (page.length < PAGE_SIZE) {
+      return members;
     }
-  } while (after);
+    after = page[page.length - 1].user.id;
+  }
+}
 
-  // Update cache
-  discordMembersCache = {
-    data: allMembers,
-    timestamp: Date.now(),
-  };
+async function getDiscordMembers(): Promise<DiscordGuildMember[]> {
+  if (membersCache && Date.now() - membersCache.fetchedAt < CACHE_TTL) {
+    return membersCache.members;
+  }
 
-  return allMembers;
+  pendingFetch ??= fetchAllMembers()
+    .then((members) => {
+      membersCache = { members, fetchedAt: Date.now() };
+      return members;
+    })
+    .finally(() => {
+      pendingFetch = null;
+    });
+
+  try {
+    return await pendingFetch;
+  } catch (error) {
+    if (!membersCache) {
+      throw error;
+    }
+    console.error("Failed to refresh guild members, using stale cache:", error);
+    return membersCache.members;
+  }
 }
 
 function getDisplayName(member: DiscordGuildMember): string {
