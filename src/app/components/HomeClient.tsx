@@ -17,7 +17,7 @@ import LanguageMenu from "./LanguageMenu";
 import LogoutButton from "./LogoutButton";
 import RestartButton from "./RestartButton";
 import Score from "./Score";
-import Timer from "./Timer";
+import Timer, { formatTime } from "./Timer";
 
 export default function HomeClient({ session }: { session: Session }) {
   const [input, setInput] = useState("");
@@ -51,6 +51,7 @@ export default function HomeClient({ session }: { session: Session }) {
   }, []);
 
   const correctMatchesCount = useMemo(() => matches.filter((m) => m.correct).length, [matches]);
+  const goalReached = correctMatchesCount >= goalAmount;
 
   const elapsedSeconds = () => Math.floor((Date.now() - startedAtRef.current) / 1000);
 
@@ -181,10 +182,15 @@ export default function HomeClient({ session }: { session: Session }) {
             setErrorMessage("");
           }}
           onSubmit={handleSubmit}
-          disabled={correctMatchesCount === goalAmount}
+          disabled={goalReached}
           loading={loading}
         />
         <Score matchesCount={correctMatchesCount} goalAmount={goalAmount} />
+        {goalReached && (
+          <p className="text-xl font-semibold text-green-600">
+            {t.goalReached.replace("{count}", String(goalAmount)).replace("{time}", formatTime(timer))}
+          </p>
+        )}
         {errorMessage && <div className="mb-2 font-semibold text-red-500">{errorMessage}</div>}
         {matches.length > 0 && (
           <>
