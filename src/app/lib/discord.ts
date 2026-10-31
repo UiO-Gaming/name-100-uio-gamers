@@ -1,13 +1,4 @@
-interface DiscordGuildMember {
-  user: {
-    id: string;
-    username: string;
-    discriminator: string;
-    avatar: string | null;
-  };
-  roles: string[];
-  joined_at: string;
-}
+import type { DiscordGuildMember } from "@/types";
 
 export async function verifyUserRole(userId: string): Promise<boolean> {
   const guildId = process.env.DISCORD_GUILD_ID;

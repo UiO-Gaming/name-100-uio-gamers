@@ -1,13 +1,9 @@
 "use client";
 
-import { useLanguage } from "@/LanguageContext";
+import { type Language, useLanguage } from "@/LanguageContext";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { IoLanguage } from "react-icons/io5";
 
-// Language type from context
-type Language = "en" | "no";
-
-// Language options configuration
 const LANGUAGE_OPTIONS: Array<{ code: Language; label: string }> = [
   { code: "en", label: "English" },
   { code: "no", label: "Norsk" },

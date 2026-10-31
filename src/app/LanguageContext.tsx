@@ -1,7 +1,7 @@
 "use client";
 import React, { createContext, useContext, useSyncExternalStore } from "react";
 
-type Language = "en" | "no";
+export type Language = "en" | "no";
 
 const LanguageContext = createContext<{
   language: Language;

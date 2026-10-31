@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth";
+import { getPayingMemberCount } from "@/lib/members";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
-import { getPayingMemberCount } from "../../guess/dataProvider";
 
 export const dynamic = "force-dynamic";
 

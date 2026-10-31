@@ -1,8 +1,8 @@
 import { authOptions } from "@/lib/auth";
+import { findDiscordMember } from "@/lib/members";
 import type { Match } from "@/types";
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
-import { findDiscordMember } from "./dataProvider";
 
 export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
