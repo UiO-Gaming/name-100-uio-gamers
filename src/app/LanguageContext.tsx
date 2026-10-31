@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useSyncExternalStore } from "react";
+import React, { createContext, useContext, useEffect, useSyncExternalStore } from "react";
 
 export type Language = "en" | "no";
 
@@ -28,6 +28,10 @@ const getServerSnapshot = (): Language => "en";
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const language = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
 
   const setLanguage = (lang: Language) => {
     localStorage.setItem("language", lang);
