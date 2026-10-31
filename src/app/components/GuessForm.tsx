@@ -35,6 +35,7 @@ const GuessForm: React.FC<GuessFormProps> = ({ input, onInputChange, onSubmit, d
         type="text"
         value={input}
         onChange={onInputChange}
+        maxLength={100}
         className={`focus:border-accent-primary h-12 w-60 rounded border px-2 py-1 focus:outline-none md:w-75 ${
           disabled || loading
             ? "cursor-not-allowed border-gray-500 bg-gray-400 opacity-50"
