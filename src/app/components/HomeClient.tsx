@@ -26,6 +26,7 @@ export default function HomeClient({ session }: { session: Session }) {
   const [timerStarted, setTimerStarted] = useState(false);
   const [loading, setLoading] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const gameIdRef = useRef(0);
   const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const { language } = useLanguage();
@@ -78,12 +79,14 @@ export default function HomeClient({ session }: { session: Session }) {
   }, [correctMatchesCount, goalAmount]);
 
   const handleRestart = () => {
+    gameIdRef.current++;
     stopTimer();
     setTimer(0);
     setTimerStarted(false);
     setMatches([]);
     setInput("");
     setErrorMessage("");
+    setLoading(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,6 +99,7 @@ export default function HomeClient({ session }: { session: Session }) {
     }
     setErrorMessage("");
     setLoading(true);
+    const gameId = gameIdRef.current;
 
     try {
       const guessedIds = matches.flatMap((m) => (m.correct && m.id ? [m.id] : []));
@@ -107,6 +111,7 @@ export default function HomeClient({ session }: { session: Session }) {
       });
       const data: Match | null = res.ok ? await res.json() : null;
 
+      if (gameId !== gameIdRef.current) return;
       if (!data) {
         setErrorMessage(res.status === 401 ? t.sessionExpired : t.guessFailed);
         return;
@@ -124,9 +129,9 @@ export default function HomeClient({ session }: { session: Session }) {
       }
     } catch (error) {
       console.error("Error submitting guess:", error);
-      setErrorMessage(t.guessFailed);
+      if (gameId === gameIdRef.current) setErrorMessage(t.guessFailed);
     } finally {
-      setLoading(false);
+      if (gameId === gameIdRef.current) setLoading(false);
     }
   };
 
