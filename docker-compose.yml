@@ -3,7 +3,7 @@ services:
     build: .
     container_name: name100
     ports:
-      - "3000:3000"
+      - "5200:3000"
     env_file:
       - .env
     environment:
